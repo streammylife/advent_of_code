@@ -1,4 +1,4 @@
-filepath = 'input06'
+filepath = 'test'
 seats = []
 
 tmpSeatId = 0
