@@ -1,5 +1,6 @@
 import re
-filepath = 'test'
+import time
+filepath = 'input'
 seats = []
 
 tmpSeatId = 0
@@ -37,41 +38,58 @@ def IsGoldBagInside(color):
     return matchFound
 
 
+def IsColorInsideBag(color):
+    matchFound = False
+    tmpMatches = 0
+    for rule in rules:
+        if "no" not in rule[1]:
+            for i in range(1,len(rule)):
+                if MATCH_STRING in rule[i]:
+                    color = rule[0][:rule[0].find("bag")]
+                    print("Gold Bag Inside This One: {}".format(color))
+                    tmpMatches += IsColorInsideBag(color) + 1
+                    break
+    return tmpMatches
 
-
+colorsToSearch = {"shiny gold"}
+tmpColorsToSearch = []
+colorMatches = []
 
 with open(filepath) as fp:
    line = fp.readline()
    while line:
        tmpRule = line.split("\n")
        tmpRule = tmpRule[0].split(" contain ")
-       rule.append(tmpRule[0])
-       tmpRule = tmpRule[1].split(", ")
-       for innerBag in tmpRule:
-           rule.append(innerBag)
-       rules.append(rule)
+       if MATCH_STRING not in tmpRule[0]:
+           rule.append(tmpRule[0])
+           tmpRule = tmpRule[1].split(", ")
+           for innerBag in tmpRule:
+               rule.append(innerBag)
+           rules.append(rule)
        rule = []
        line = fp.readline()
 
-   for rule in rules:
-       print("Rule to search: {}".format(rule))
-       matchFound = False
-       if MATCH_STRING not in rule[0]:
+while len(colorsToSearch) > 0:
+    for colorToSearch in colorsToSearch:
+        print(colorToSearch)
+        for rule in rules:
+           #print("Rule to search: {}".format(rule))
            if "no" not in rule[1]:
                for i in range(1,len(rule)):
-                   if MATCH_STRING in rule[i]:
-                       # print(rule[i])
-                       matchFound = True
+                   if colorToSearch in rule[i]:
+                       color = rule[0][:rule[0].find("bag")]
+                       if color not in colorMatches:
+                           print("DING DING NEW MATCH: {}".format(color))
+                           tmpColorsToSearch.append(color)
+                           colorMatches.append(color)
                        break
-                   else:
-                       color = rule[i][2:rule[i].find("bag")]
-                       matchFound = IsGoldBagInside(color)
-                       if matchFound == False:
-                           deadEndColors.append(color)
 
-       if(matchFound):
-           matches += 1
+    colorsToSearch = tmpColorsToSearch
+    tmpColorsToSearch = []
+    print(colorsToSearch)
+    # time.sleep(2)
 
 
 
-print(matches)
+
+print(len(colorMatches))
