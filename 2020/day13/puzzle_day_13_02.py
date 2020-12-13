@@ -11,8 +11,8 @@ with open(filepath) as fp:
 
 timeStamp = int(data[0])
 buses = data[1].split("\n")[0].split(',')
-print(timeStamp)
-print(buses)
+# print(timeStamp)
+# print(buses)
 
 complete = False
 
@@ -43,15 +43,23 @@ complete = False
 multFact = 1
 while complete == False:
     complete = True
-    startVal = busVals[0][1] * multFact
-    #print("startVal {}".format(startVal))
+    startVal = ((busVals[0][1] * 658) * multFact) + (busVals[0][1] * (multFact-1))
+    #startVal = (busVals[0][1]) * multFact
+    # print("startVal {}".format(startVal))
+    # if((startVal + busVals[0][1]) % 19) == 0:
+    #     print("valid startVal: {}".format(startVal))
+    # if True:
     for i in range(1,len(busVals)):
         valToCheck = startVal + busVals[i][0]
         if valToCheck % busVals[i][1] != 0:
             complete = False
             break
+
+    # else:
+    #     complete = False
+
     multFact = multFact + 1
-    #time.sleep(1)
+    # time.sleep(1)
 
 print(startVal)
 
