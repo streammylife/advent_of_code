@@ -1,110 +1,80 @@
 import time
 
 filepath = 'input'
-
-curDir = 'E'
-instructions = []
-
-eastSum = 0
-northSum = 0
-
+data = []
 with open(filepath) as fp:
    line = fp.readline()
    cnt = 1
    while line:
-       tmpDir = []
-       tmpDir.append(line[0])
-       tmpDir.append(int(line[1:]))
-       instructions.append(tmpDir)
+       data.append(line)
        line = fp.readline()
 
-dirArray = ['N', 'E', 'S', 'W']
+timeStamp = int(data[0])
+buses = data[1].split("\n")[0].split(',')
+print(timeStamp)
+print(buses)
+
+complete = False
+
+i = 1
+
+testVal = 1
+# for i in range(0,len(buses)):
+    # testVal = testVal + i
+    # #print(testVal)
+    # if buses[i] != 'x':
+    #     busNum = int(buses[i])
+    #     if (testVal % busNum) != 0:
+    #         testVal = testVal * busNum
+    #
+    # print(testVal)
 
 
-waypointDirs = [0,2]
-waypoint = ['E',10,'N',1]
+busVals = []
+for i in range(len(buses)):
+    busVal = []
+    if buses[i] != 'x':
+        busVal.append(i)
+        busVal.append(int(buses[i]))
+        busVals.append(busVal)
+print(busVals)
 
-for instruction in instructions:
-    print(instruction)
+complete = False
+multFact = 1
+while complete == False:
+    complete = True
+    startVal = busVals[0][1] * multFact
+    #print("startVal {}".format(startVal))
+    for i in range(1,len(busVals)):
+        valToCheck = startVal + busVals[i][0]
+        if valToCheck % busVals[i][1] != 0:
+            complete = False
+            break
+    multFact = multFact + 1
+    #time.sleep(1)
 
-    tmpInstrCmd = instruction[0]
-    tmpInstrVal = instruction[1]
-    if tmpInstrCmd == 'F':
-        for i in range(tmpInstrVal):
-            if waypoint[0] == 'E':
-                eastSum = eastSum + waypoint[1]
-            elif waypoint[0] == 'W':
-                eastSum = eastSum - waypoint[1]
-            elif waypoint[0] == 'N':
-                northSum = northSum + waypoint[1]
-            elif waypoint[0] == 'S':
-                northSum = northSum - waypoint[1]
+print(startVal)
 
-            if waypoint[2] == 'E':
-                eastSum = eastSum + waypoint[3]
-            elif waypoint[2] == 'W':
-                eastSum = eastSum - waypoint[3]
-            elif waypoint[2] == 'N':
-                northSum = northSum + waypoint[3]
-            elif waypoint[2] == 'S':
-                northSum = northSum - waypoint[3]
-
-    elif tmpInstrCmd == 'L' or tmpInstrCmd == 'R':
-        dirChange = tmpInstrVal / 90
-        curDirArrayPos = dirArray.index(waypoint[0])
-        if tmpInstrCmd == 'L':
-            waypoint[0] = dirArray[(curDirArrayPos - dirChange) % 4]
-        if tmpInstrCmd == 'R':
-            waypoint[0] = dirArray[(curDirArrayPos + dirChange) % 4]
-
-        curDirArrayPos = dirArray.index(waypoint[2])
-        if tmpInstrCmd == 'L':
-            waypoint[2] = dirArray[(curDirArrayPos - dirChange) % 4]
-        if tmpInstrCmd == 'R':
-            waypoint[2] = dirArray[(curDirArrayPos + dirChange) % 4]
-
-    elif tmpInstrCmd == 'E':
-        for waypointDir in waypointDirs:
-            if waypoint[waypointDir] == 'E':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] + tmpInstrVal
-            if waypoint[waypointDir] == 'W':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] - tmpInstrVal
-                if waypoint[waypointDir + 1] < 0:
-                    waypoint[waypointDir] = 'E'
-                    waypoint[waypointDir + 1] = abs(waypoint[waypointDir + 1])
-    elif tmpInstrCmd == 'W':
-        for waypointDir in waypointDirs:
-            if waypoint[waypointDir] == 'W':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] + tmpInstrVal
-            if waypoint[waypointDir] == 'E':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] - tmpInstrVal
-                if waypoint[waypointDir + 1] < 0:
-                    waypoint[waypointDir] = 'W'
-                    waypoint[waypointDir + 1] = abs(waypoint[waypointDir + 1])
-    elif tmpInstrCmd == 'N':
-        for waypointDir in waypointDirs:
-            if waypoint[waypointDir] == 'N':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] + tmpInstrVal
-            if waypoint[waypointDir] == 'S':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] - tmpInstrVal
-                if waypoint[waypointDir + 1] < 0:
-                    waypoint[waypointDir] = 'N'
-                    waypoint[waypointDir + 1] = abs(waypoint[waypointDir + 1])
-    elif tmpInstrCmd == 'S':
-        for waypointDir in waypointDirs:
-            if waypoint[waypointDir] == 'S':
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] + tmpInstrVal
-            if waypoint[waypointDir] == 'N':
-                # print("here")
-                waypoint[waypointDir + 1] = waypoint[waypointDir + 1] - tmpInstrVal
-                # print(waypoint[waypointDir + 1])
-                if waypoint[waypointDir + 1] < 0:
-                    waypoint[waypointDir] = 'S'
-                    waypoint[waypointDir + 1] = abs(waypoint[waypointDir + 1])
-    print(waypoint)
-    print("eastSum: {}".format(eastSum))
-    print("northSum: {}".format(northSum))
-    print("    ")
-
-
-print(abs(northSum) + abs(eastSum))
+# complete = False
+# while complete != True:
+#     # print("---------")
+#     complete = True
+#     startTestVal = int(buses[0]) * i
+#     for ii in range(1,len(buses)):
+#         testVal = startTestVal + ii
+#         if(buses[ii] != 'x'):
+#             if testVal >= int(buses[ii]):
+#                 if (testVal % int(buses[ii])) != 0:
+#                     complete = False
+#                     break
+#                 # else:
+#                 #     print("testVal {}".format(testVal))
+#                 #     print("number check {}".format(int(buses[ii])))
+#                 #     print("found")
+#             else:
+#                 complete = False
+#                 break
+#     i = i + 1
+#     # time.sleep(1)
+#
+# print("startingTestVal {}".format(startTestVal))
