@@ -1,6 +1,6 @@
 import time
 
-filepath = 'input'
+filepath = 'test'
 data = []
 with open(filepath) as fp:
    line = fp.readline()
@@ -39,50 +39,52 @@ for i in range(len(buses)):
         busVals.append(busVal)
 print(busVals)
 
+busMults = []
+for busVal in busVals:
+    idxMatch = busVal[0] + busVal[1]
+    mult = 1
+    for busVal2 in busVals:
+        if busVal2[0] == idxMatch:
+            mult = busVal2[1]
+            break
+    busMults.append(mult)
+
+print(busMults)
+
+
+
 complete = False
 multFact = 1
-while complete == False:
-    complete = True
-    startVal = ((busVals[0][1] * 658) * multFact) + (busVals[0][1] * (multFact-1))
-    #startVal = (busVals[0][1]) * multFact
-    # print("startVal {}".format(startVal))
-    # if((startVal + busVals[0][1]) % 19) == 0:
-    #     print("valid startVal: {}".format(startVal))
-    # if True:
-    for i in range(1,len(busVals)):
-        valToCheck = startVal + busVals[i][0]
-        if valToCheck % busVals[i][1] != 0:
-            complete = False
-            break
 
-    # else:
-    #     complete = False
-
-    multFact = multFact + 1
-    # time.sleep(1)
-
-print(startVal)
-
-# complete = False
-# while complete != True:
-#     # print("---------")
+# while complete == False:
 #     complete = True
-#     startTestVal = int(buses[0]) * i
-#     for ii in range(1,len(buses)):
-#         testVal = startTestVal + ii
-#         if(buses[ii] != 'x'):
-#             if testVal >= int(buses[ii]):
-#                 if (testVal % int(buses[ii])) != 0:
-#                     complete = False
-#                     break
-#                 # else:
-#                 #     print("testVal {}".format(testVal))
-#                 #     print("number check {}".format(int(buses[ii])))
-#                 #     print("found")
-#             else:
-#                 complete = False
-#                 break
-#     i = i + 1
-#     # time.sleep(1)
+#     startVal = (busVals[0][1] * busMults[0]) + (busVals[0][1] * multFact - 1)
+#     for i in range(1,len(busVals)):
 #
-# print("startingTestVal {}".format(startTestVal))
+#     multFact = multFact + 1
+#
+# print(startVal)
+
+complete = False
+while complete != True:
+    # print("---------")
+    complete = True
+    startTestVal = int(buses[0]) * i
+    for ii in range(1,len(buses)):
+        testVal = startTestVal + ii
+        if(buses[ii] != 'x'):
+            if testVal >= int(buses[ii]):
+                if (testVal % int(buses[ii])) != 0:
+                    complete = False
+                    break
+                # else:
+                #     print("testVal {}".format(testVal))
+                #     print("number check {}".format(int(buses[ii])))
+                #     print("found")
+            else:
+                complete = False
+                break
+    i = i + 1
+    # time.sleep(1)
+#
+print("startingTestVal {}".format(startTestVal))
