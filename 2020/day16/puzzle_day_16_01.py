@@ -40,6 +40,10 @@ with open(filepath) as fp:
                    for ticketNum in line.split("\n")[0].split(','):
                        # ticketNums.append(int(ticketNum))
                        num = int(ticketNum)
+                       check = False
+                       for rule in rules:
+                           if num not in range(rule[1][0]:rule[1][1]):
+
 
 
 
