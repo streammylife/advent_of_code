@@ -1,4 +1,5 @@
 import time
+start_time = time.time()
 
 filepath = 'input'
 data = []
@@ -31,7 +32,7 @@ prevTurn.pop(lastNum)
 # print("------")
 
 while turn < 30000001:
-# while turn < 2021:
+#while turn < 2021:
 
     # print("------")
     # print("turn {}".format(turn))
@@ -55,6 +56,8 @@ while turn < 30000001:
     #print("        ")
 
 print("lastNum {}".format(lastNum))
+
+print("--- %s seconds ---" % (time.time() - start_time))
 
 
 
