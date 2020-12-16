@@ -1,61 +1,54 @@
 import time
 start_time = time.time()
 
-filepath = 'input'
-data = []
+filepath = 'test'
 
-memory = {}
-mask = ""
-maskOffset = 7
+rules = []
 
-numbers = [8,13,1,0,18,9]
-#numbers = [3,1,2]
-turn = 1;
-turnNumbers = []
+processState = 0
+nextState = 0
+ticketErrRate = 0
 
-prevTurn = {}
-prevPrevTurn = {}
+with open(filepath) as fp:
+   line = fp.readline()
+   cnt = 1
+   while line:
 
-lastNum = 0
+       # print("Line: {}".format(line))
+       if line.isspace():
+           processState = processState + 1
+           # print("NextState: {}".format(processState))
+       else:
+           if processState == 0:
+               lineItems = line.split()
+               lineRule = []
+               lineRule.append(lineItems[0])
+               print(lineItems)
+               for lineItem in lineItems:
+                   if(lineItem.find('-') != -1):
+                       lineRuleRange = []
+                       lineItemRanges = lineItem.split('-')
+                       for lineItemRange in lineItemRanges:
+                           lineRuleRange.append(int(lineItemRange))
+                       lineRule.append(lineRuleRange)
+               rules.append(lineRule)
 
-for num in numbers:
-    prevTurn[num] = turn
-    turn = turn + 1
-    prevPrevTurn[num] = turn
-    lastNum = num;
+           if processState == 2:
+               ticketNums = []
+               if(line.find("ticket") == -1):
+                   print(line.split("\n")[0].split(','))
+                   for ticketNum in line.split("\n")[0].split(','):
+                       # ticketNums.append(int(ticketNum))
+                       num = int(ticketNum)
 
 
-prevTurn.pop(lastNum)
 
-# print("PrevTurn {}".format(prevTurn))
-#
-# print("------")
 
-while turn < 30000001:
-#while turn < 2021:
+       line = fp.readline()
 
-    # print("------")
-    # print("turn {}".format(turn))
-    # print("lastNum {}".format(lastNum))
-    #print("PrevTurn {}".format(prevTurn))
-    # print("prevPrevTurn {}".format(prevPrevTurn))
+print("    ")
 
-    prevTurnVal = prevTurn.get(lastNum)
-    if(prevTurnVal != None):
-        nextNum = turn - prevTurnVal - 1
-    else:
-        nextNum = 0
-
-    prevTurn[lastNum] = turn - 1
-
-    lastNum = nextNum
-    # print("nextNum {}".format(nextNum))
-
-    turn = turn + 1
-    # time.sleep(1)
-    #print("        ")
-
-print("lastNum {}".format(lastNum))
+print(rules)
 
 print("--- %s seconds ---" % (time.time() - start_time))
 
