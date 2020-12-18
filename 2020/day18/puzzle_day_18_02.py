@@ -2,118 +2,65 @@ import time
 start_time = time.time()
 
 filepath = 'input'
-
-startingGrid = []
-
-coordinates = {}
-newCoordinates = {}
+numbers = []
 
 
-def GetCoridinate(x,y,z,w):
-    key = "{},{},{},{}".format(x,y,z,w)
-    return coordinates.get(key)
 
-def SetCoordinate(x,y,z,w,val,set):
-    key = "{},{},{},{}".format(x,y,z,w)
-    # print(val)
-    # print(type(val))
-    # print(key)
-    # print(type(key))
-    # print(set)
-    # print(type(set))
-    set[key] = val
+def parsePars(line):
+    close = line.find(')')
+    while close != -1:
+        # print(line)
+        open = line.rfind('(', 0, close)
+        # print(line)
+        val = solveEq(line[open+1:close].split(" "))
+        # print("val {}".format(val))
+        line = line[:open] + str(val) + line[close+1:]
+        # print("new line {}".format(line))
+        close = line.find(')')
+        # print("close {}".format(close))
+        # time.sleep(3)
+    # print(line)
+    # print(solveEq(line.split(" ")))
+    return(solveEq(line.split(" ")))
 
 
-def ConvertKeyToXYZ(key):
-    tmpCordinate = dict()
-    key = key.split(',')
-    tmpCordinate['x'] = int(key[0])
-    tmpCordinate['y'] = int(key[1])
-    tmpCordinate['z'] = int(key[2])
-    tmpCordinate['w'] = int(key[3])
-    return tmpCordinate
+def solveEq(eqPieces):
+    addComplete = False
+    while(addComplete == False):
+        addComplete = True
+        if '+' in eqPieces:
+            addComplete = False
+            multIdx = eqPieces.index('+')
+            eqPieces[multIdx] = int(eqPieces[multIdx-1]) + int(eqPieces[multIdx+1])
+            eqPieces.pop(multIdx + 1)
+            eqPieces.pop(multIdx - 1)
 
+    multComplete = False
+    while(multComplete == False):
+        multComplete = True
+        if '*' in eqPieces:
+            multComplete = False
+            multIdx = eqPieces.index('*')
+            eqPieces[multIdx] = int(eqPieces[multIdx-1]) * int(eqPieces[multIdx+1])
+            eqPieces.pop(multIdx + 1)
+            eqPieces.pop(multIdx - 1)
+
+
+
+    return int(eqPieces[0])
 
 with open(filepath) as fp:
    line = fp.readline()
    cnt = 1
-   y = 0
-   z = 0
-   w = 0
+   sum = 0
    while line:
-       line = line.split("\n")[0]
-       x = 0
-       for c in line:
-           SetCoordinate(x,y,z,w,c,coordinates)
-           x = x + 1
-
+       # print(line)
+       val = parsePars(line.split("\n")[0])
+       sum = sum + val
+       # print(val)
        line = fp.readline()
-       y = y + 1
 
-print("coordinates {}".format(coordinates))
-print("-------")
-
-
-activeCnt  = 0
-for key in coordinates.keys():
-    if coordinates[key] == '#':
-        activeCnt = activeCnt + 1
-print("ActiveCnt: {}".format(activeCnt))
-print("CoordCnt: {}".format(len(coordinates)))
-
-
-
-for i in range(7):
-    print("     ")
-    newCoordinates = {}
-    for key in coordinates.keys():
-        tmpCordinate = ConvertKeyToXYZ(key)
-        # print(tmpCordinate)
-        activeNeighbors = 0
-        neighborCnt = 0
-        for x in range (tmpCordinate['x']-1,tmpCordinate['x']+2):
-            for y in range (tmpCordinate['y']-1,tmpCordinate['y']+2):
-                for z in range (tmpCordinate['z']-1,tmpCordinate['z']+2):
-                    for w in range (tmpCordinate['w']-1,tmpCordinate['w']+2):
-                        neighborCnt = neighborCnt + 1
-                        val = GetCoridinate(x,y,z,w)
-                        if val == '#':
-                            activeNeighbors = activeNeighbors + 1
-                        elif val == None:
-                            SetCoordinate(x,y,z,w,'.',newCoordinates)
-
-        val = coordinates[key]
-
-        if i != 0:
-            if val == '#':
-                if activeNeighbors == 3 or activeNeighbors == 4:
-                    val = '#'
-                else:
-                    val = '.'
-            else:
-                if activeNeighbors == 3:
-                    val = '#'
-
-        newCoordinates[key] = val
-    coordinates = newCoordinates
-    # for key in sorted(coordinates.keys()):
-    #     print(key)
-
-
-
-activeCnt  = 0
-for key in coordinates.keys():
-    if coordinates[key] == '#':
-        activeCnt = activeCnt + 1
-print("ActiveCnt: {}".format(activeCnt))
-print("CoordCnt: {}".format(len(coordinates)))
-
-
-
-
-
-
+print("Sum: {}".format(sum))
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
-
