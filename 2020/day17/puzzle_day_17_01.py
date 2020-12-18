@@ -59,44 +59,51 @@ for key in coordinates.keys():
 print("ActiveCnt: {}".format(activeCnt))
 print("CoordCnt: {}".format(len(coordinates)))
 
-for i in range(1):
+
+
+for i in range(7):
     print("     ")
     newCoordinates = {}
     for key in coordinates.keys():
         tmpCordinate = ConvertKeyToXYZ(key)
-        print(tmpCordinate)
+        # print(tmpCordinate)
         activeNeighbors = 0
+        neighborCnt = 0
         for x in range (tmpCordinate['x']-1,tmpCordinate['x']+2):
             for y in range (tmpCordinate['y']-1,tmpCordinate['y']+2):
                 for z in range (tmpCordinate['z']-1,tmpCordinate['z']+2):
-                    SetCoordinate(x,y,z,'.',newCoordinates)
-                    # val = GetCoridinate(x,y,z)
-                    # if val == '#':
-                    #     activeNeighbors = activeNeighbors + 1
-                    # elif val == None:
-                    #     # print("X: {} Y: {} Z: {}".format(x,y,z))
-                    #     SetCoordinate(x,y,z,'.',newCoordinates)
+                    neighborCnt = neighborCnt + 1
+                    val = GetCoridinate(x,y,z)
+                    if val == '#':
+                        activeNeighbors = activeNeighbors + 1
+                    elif val == None:
+                        SetCoordinate(x,y,z,'.',newCoordinates)
 
         val = coordinates[key]
 
-        if val == '#':
-            if activeNeighbors == 3 or activeNeighbors == 4:
-                val = '#'
+        if i != 0:
+            if val == '#':
+                if activeNeighbors == 3 or activeNeighbors == 4:
+                    val = '#'
+                else:
+                    val = '.'
             else:
-                val = '.'
-        else:
-            if activeNeighbors == 3:
-                val = '#'
+                if activeNeighbors == 3:
+                    val = '#'
 
         newCoordinates[key] = val
     coordinates = newCoordinates
+    # for key in sorted(coordinates.keys()):
+    #     print(key)
 
-    activeCnt  = 0
-    for key in coordinates.keys():
-        if coordinates[key] == '#':
-            activeCnt = activeCnt + 1
-    print("ActiveCnt: {}".format(activeCnt))
-    print("CoordCnt: {}".format(len(coordinates)))
+
+
+activeCnt  = 0
+for key in coordinates.keys():
+    if coordinates[key] == '#':
+        activeCnt = activeCnt + 1
+print("ActiveCnt: {}".format(activeCnt))
+print("CoordCnt: {}".format(len(coordinates)))
 
 
 
