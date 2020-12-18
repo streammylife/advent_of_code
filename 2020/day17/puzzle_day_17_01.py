@@ -13,13 +13,16 @@ def GetCoridinate(x,y,z):
     key = "{},{},{}".format(x,y,z)
     return coordinates.get(key)
 
-def SetCoordinate(x,y,z,val):
+def SetCoordinate(x,y,z,val,set):
     key = "{},{},{}".format(x,y,z)
-    coordinates[key] = val
+    # print(val)
+    # print(type(val))
+    # print(key)
+    # print(type(key))
+    # print(set)
+    # print(type(set))
+    set[key] = val
 
-def SetNewCoordinate(x,y,z,val):
-    key = "{},{},{}".format(x,y,z)
-    newCoordinates[key] = val
 
 def ConvertKeyToXYZ(key):
     tmpCordinate = dict()
@@ -39,32 +42,64 @@ with open(filepath) as fp:
        line = line.split("\n")[0]
        x = 0
        for c in line:
-           SetCoordinate(x,y,z,c)
+           SetCoordinate(x,y,z,c,coordinates)
            x = x + 1
 
        line = fp.readline()
        y = y + 1
 
-for i in range(6)
-    newCoordinates = []
+print("coordinates {}".format(coordinates))
+print("-------")
+
+
+activeCnt  = 0
+for key in coordinates.keys():
+    if coordinates[key] == '#':
+        activeCnt = activeCnt + 1
+print("ActiveCnt: {}".format(activeCnt))
+print("CoordCnt: {}".format(len(coordinates)))
+
+for i in range(1):
+    print("     ")
+    newCoordinates = {}
     for key in coordinates.keys():
         tmpCordinate = ConvertKeyToXYZ(key)
         print(tmpCordinate)
         activeNeighbors = 0
-        for x in range (tmpCordinate['x']-1,tmpCordinate['x']+1):
-            for y in range (tmpCordinate['y']-1,tmpCordinate['y']+1):
-                for z in range (tmpCordinate['z']-1,tmpCordinate['z']+1):
-                    val = GetCoridinate(x,y,z)
-                    if val == '#':
-                        activeNeighbors = activeNeighbors + 1
-                    elif val == None:
-                        SetNewCoordinate(x,y,z,'.')
+        for x in range (tmpCordinate['x']-1,tmpCordinate['x']+2):
+            for y in range (tmpCordinate['y']-1,tmpCordinate['y']+2):
+                for z in range (tmpCordinate['z']-1,tmpCordinate['z']+2):
+                    SetCoordinate(x,y,z,'.',newCoordinates)
+                    # val = GetCoridinate(x,y,z)
+                    # if val == '#':
+                    #     activeNeighbors = activeNeighbors + 1
+                    # elif val == None:
+                    #     # print("X: {} Y: {} Z: {}".format(x,y,z))
+                    #     SetCoordinate(x,y,z,'.',newCoordinates)
 
-        
-        print(activeNeighbors)
+        val = coordinates[key]
+
+        if val == '#':
+            if activeNeighbors == 3 or activeNeighbors == 4:
+                val = '#'
+            else:
+                val = '.'
+        else:
+            if activeNeighbors == 3:
+                val = '#'
+
+        newCoordinates[key] = val
+    coordinates = newCoordinates
+
+    activeCnt  = 0
+    for key in coordinates.keys():
+        if coordinates[key] == '#':
+            activeCnt = activeCnt + 1
+    print("ActiveCnt: {}".format(activeCnt))
+    print("CoordCnt: {}".format(len(coordinates)))
 
 
-print(coordinates)
+
 
 
 
