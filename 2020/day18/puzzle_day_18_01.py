@@ -1,28 +1,34 @@
-filepath = 'test'
+import time
+
+filepath = 'input'
 numbers = []
 
 
 
-def solveEq(eqPieces):
-
+def parsePars(line):
     close = line.find(')')
     while close != -1:
-        lastOpen = line.find('(')
-        while lastOpen < close
+        # print(line)
+        open = line.rfind('(', 0, close)
+        # print(line)
+        val = solveEq(line[open+1:close].split(" "))
+        # print("val {}".format(val))
+        line = line[:open] + str(val) + line[close+1:]
+        # print("new line {}".format(line))
         close = line.find(')')
+        # print("close {}".format(close))
+        # time.sleep(3)
+    # print(line)
+    # print(solveEq(line.split(" ")))
+    return(solveEq(line.split(" ")))
 
 
-
-
-
-    newEqStart = line.find('(')
-    if newEqStart != -1:
-        solveEq(eqPieces)
-
+def solveEq(eqPieces):
 
     operators = ['*', '+']
     opComplete = False
     while(opComplete == False):
+        # print(eqPieces)
         opComplete = True
 
         for i in range(len(eqPieces)):
@@ -77,7 +83,9 @@ with open(filepath) as fp:
    sum = 0
    while line:
        print(line)
-       val = solveEq(line.split("\n")[0].split(" "))
+       val = parsePars(line.split("\n")[0])
+       sum = sum + val
        print(val)
        line = fp.readline()
 
+print("Sum: {}".format(sum))
