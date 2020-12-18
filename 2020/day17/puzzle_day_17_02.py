@@ -1,7 +1,7 @@
 import time
 start_time = time.time()
 
-filepath = 'test'
+filepath = 'input'
 
 startingGrid = []
 
@@ -9,12 +9,12 @@ coordinates = {}
 newCoordinates = {}
 
 
-def GetCoridinate(x,y,z):
-    key = "{},{},{}".format(x,y,z)
+def GetCoridinate(x,y,z,w):
+    key = "{},{},{},{}".format(x,y,z,w)
     return coordinates.get(key)
 
-def SetCoordinate(x,y,z,val,set):
-    key = "{},{},{}".format(x,y,z)
+def SetCoordinate(x,y,z,w,val,set):
+    key = "{},{},{},{}".format(x,y,z,w)
     # print(val)
     # print(type(val))
     # print(key)
@@ -30,6 +30,7 @@ def ConvertKeyToXYZ(key):
     tmpCordinate['x'] = int(key[0])
     tmpCordinate['y'] = int(key[1])
     tmpCordinate['z'] = int(key[2])
+    tmpCordinate['w'] = int(key[3])
     return tmpCordinate
 
 
@@ -38,11 +39,12 @@ with open(filepath) as fp:
    cnt = 1
    y = 0
    z = 0
+   w = 0
    while line:
        line = line.split("\n")[0]
        x = 0
        for c in line:
-           SetCoordinate(x,y,z,c,coordinates)
+           SetCoordinate(x,y,z,w,c,coordinates)
            x = x + 1
 
        line = fp.readline()
@@ -72,12 +74,13 @@ for i in range(7):
         for x in range (tmpCordinate['x']-1,tmpCordinate['x']+2):
             for y in range (tmpCordinate['y']-1,tmpCordinate['y']+2):
                 for z in range (tmpCordinate['z']-1,tmpCordinate['z']+2):
-                    neighborCnt = neighborCnt + 1
-                    val = GetCoridinate(x,y,z)
-                    if val == '#':
-                        activeNeighbors = activeNeighbors + 1
-                    elif val == None:
-                        SetCoordinate(x,y,z,'.',newCoordinates)
+                    for w in range (tmpCordinate['w']-1,tmpCordinate['w']+2):
+                        neighborCnt = neighborCnt + 1
+                        val = GetCoridinate(x,y,z,w)
+                        if val == '#':
+                            activeNeighbors = activeNeighbors + 1
+                        elif val == None:
+                            SetCoordinate(x,y,z,w,'.',newCoordinates)
 
         val = coordinates[key]
 
