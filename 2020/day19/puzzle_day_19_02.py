@@ -1,17 +1,33 @@
 import time
 start_time = time.time()
 
-filepath = 'input'
+filepath = 'input2'
 
 state = 0
 nextState = 0
 rules = {}
 
+recursiveCnt = 0
+
+inputs = {}
+
 def checkRule(checkString, rules, ruleToCheck):
     # print("checkRule->checkString: {}".format(checkString))
+
+    global recursiveCnt
+
+    ruleCheck = [False, checkString]
+
+    if ruleToCheck == '8' or ruleToCheck == '11':
+        recursiveCnt = recursiveCnt + 1
+        if recursiveCnt > 9:
+            return  ruleCheck
+
     ruleCheck = [False, checkString]
     rule = rules[ruleToCheck]
     tmpCheckString = checkString
+
+
     for subRule in rule:
         for subSubRule in subRule:
             ruleCheck[0] = False
@@ -22,11 +38,12 @@ def checkRule(checkString, rules, ruleToCheck):
                 else:
                     tmpCheckString = ruleCheck[1]
             else:
-                if tmpCheckString[0] == subSubRule:
-                    ruleCheck[0] = True
-                    tmpCheckString = tmpCheckString[1:]
-                else:
-                    ruleCheck[0] = False
+                ruleCheck[0] = False
+                if len(tmpCheckString) > 0:
+                    if tmpCheckString[0] == subSubRule:
+                        ruleCheck[0] = True
+                        tmpCheckString = tmpCheckString[1:]
+                if ruleCheck[0] == False:
                     break
 
                 # pos = tmpCheckString.find(subSubRule)
@@ -62,7 +79,7 @@ with open(filepath) as fp:
             else:
                 rule = line.split("\n")[0].split(":")
                 ruleIdx = rule[0]
-                subrules = rule[1].replace("\"","").split("|")
+                subrules = rule[1].replace("\"", "").split("|")
 
                 # rule.append(ruleIdx)
 
@@ -75,16 +92,21 @@ with open(filepath) as fp:
                 rules[ruleIdx] = tmpSubRules
                 # rule.append(tmpSubRules)
 
-                print(tmpSubRules)
+                # print(tmpSubRules)
                 #rules.append(rule)
         elif state == 1:
             checkString = line.split("\n")[0]
-            print("     ")
-            print("Checkstring: {}".format(checkString))
-            result = checkRule(checkString, rules, '0')
-            if result[0] == True:
-                if len(result[1]) == 0:
-                    cnt = cnt + 1
+
+            inputs[checkString] = False
+            # # print("     ")
+            # # print("Checkstring: {}".format(checkString))
+            # recursiveCnt = 0
+            # result = checkRule(checkString, rules, '0')
+            # if result[0] == True:
+            #     print("Checkstring: {}".format(checkString))
+            #     # cnt = cnt + 1
+            #     if len(result[1]) == 0:
+            #         cnt = cnt + 1
             # print("Checkstring End: {}".format(checkString))
             # print("Checkstring: {}".format(checkString))
             # for rule in rules:
@@ -95,6 +117,18 @@ with open(filepath) as fp:
         state = nextState
 
         line = fp.readline()
+
+
+for inputKey in inputs.keys():
+    if inputs.get(inputKey) == False:
+        result = checkRule(inputKey, rules, '0')
+        if result[0] == True:
+            if len(result[1]) == 0:
+                inputs[inputKey] = True
+                cnt = cnt + 1
+
+print("Count: {}".format(cnt))
+
 
 print("Cnt: {}".format(cnt))
 print("--- %s seconds ---" % (time.time() - start_time))
