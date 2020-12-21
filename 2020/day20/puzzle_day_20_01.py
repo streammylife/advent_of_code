@@ -18,15 +18,15 @@ def flipGridY(grid):
     tmpGrid = grid.get(2)
     grid[2] = grid.get(0)
     grid[0] = tmpGrid
-    grid[1] = grid.get(1)[::-1]
-    grid[3] = grid.get(3)[::-1]
+    grid[1]["edge"] = grid.get(1).get("edge")[::-1]
+    grid[3]["edge"] = grid.get(3).get("edge")[::-1]
 
 def flipGridX(grid):
     tmpGrid = grid.get(3)
     grid[3] = grid.get(1)
     grid[1] = tmpGrid
-    grid[0] = grid.get(0)[::-1]
-    grid[2] = grid.get(2)[::-1]
+    grid[0]["edge"] = grid.get(0).get("edge")[::-1]
+    grid[2]["edge"] = grid.get(2).get("edge")[::-1]
 
 def printGrid(grid):
     for key in sorted(grid.keys()):
@@ -113,7 +113,7 @@ matchKeys = []
 complete = False
 while complete == False:
     complete = True
-    matchKey = []
+    matchKeys = []
     for puzzleKey in puzzle.keys():
         puzzlePiece = puzzle.get(key)
         for edgeKey in puzzlePiece.keys():
@@ -132,9 +132,60 @@ while complete == False:
 
     matchKeys = list(dict.fromkeys(matchKeys))
     for matchKey in matchKeys:
-        puzzle[matchKey] = grids.get(matchKey)
+        puzzle[matchKey] = grids.get(matchKey).copy()
         grids.pop(matchKey)
 
+complete = False
+while complete == False:
+    complete = True
+    matchKeys = []
+    for puzzleKey in puzzle.keys():
+        puzzlePiece = puzzle.get(key)
+        for edgeKey in puzzlePiece.keys():
+            edge = puzzlePiece.get(edgeKey)
+            #first check if edge has match
+            if edge.get("match") == False:
+                for loosePuzzleKey in grids.keys():
+                    loosePuzzlePiece = grids.get(loosePuzzleKey)
+                    flipGridX(loosePuzzlePiece)
+                    for looseEdgeKey in loosePuzzlePiece.keys():
+                        looseEdge = loosePuzzlePiece.get(looseEdgeKey)
+                        if looseEdge.get("edge") == edge.get("edge"):
+                            looseEdge["match"] = True
+                            edge["match"] = True
+                            matchKeys.append(loosePuzzleKey)
+                            complete = False
+
+    matchKeys = list(dict.fromkeys(matchKeys))
+    for matchKey in matchKeys:
+        puzzle[matchKey] = grids.get(matchKey).copy()
+        grids.pop(matchKey)
+
+complete = False
+while complete == False:
+    complete = True
+    matchKeys = []
+    for puzzleKey in puzzle.keys():
+        puzzlePiece = puzzle.get(key)
+        for edgeKey in puzzlePiece.keys():
+            edge = puzzlePiece.get(edgeKey)
+            #first check if edge has match
+            if edge.get("match") == False:
+                for loosePuzzleKey in grids.keys():
+                    loosePuzzlePiece = grids.get(loosePuzzleKey)
+                    flipGridY(loosePuzzlePiece)
+                    for looseEdgeKey in loosePuzzlePiece.keys():
+                        looseEdge = loosePuzzlePiece.get(looseEdgeKey)
+                        if looseEdge.get("edge") == edge.get("edge"):
+                            looseEdge["match"] = True
+                            edge["match"] = True
+                            matchKeys.append(loosePuzzleKey)
+                            complete = False
+
+    matchKeys = list(dict.fromkeys(matchKeys))
+    for matchKey in matchKeys:
+        puzzle[matchKey] = grids.get(matchKey).copy()
+        grids.pop(matchKey)
 
 # print("flipping x")
 #
