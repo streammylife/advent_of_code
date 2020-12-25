@@ -1,4 +1,4 @@
-filepath = 'input01'
+filepath = 'input'
 numbers = []
 with open(filepath) as fp:
    line = fp.readline()
