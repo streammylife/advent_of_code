@@ -5,6 +5,13 @@ filepath = 'test'
 
 loosePieces = {}
 
+def rotateGrid(grid):
+    tmp = grid.get("west")
+    for key in reversed(range(1,4)):
+        grid[key] = grid.get(key - 1)
+    grid[0] = tmp
+
+
 #get all the pieces
 with open(filepath) as fp:
    line = fp.readline()
@@ -69,7 +76,9 @@ for key1 in foundPieces.keys():
                 lp = loosePieces.get(key3)
                 for i in range(4):
                     checkEdge = edge.get("matchKey")
-                    print(checkEdge)
+                    edge2 = lp.get(checkEdge)
+                    if edge.get("edge") == edge2.get("edge"):
+                        print(checkEdge)
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
