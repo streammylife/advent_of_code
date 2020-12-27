@@ -94,6 +94,13 @@ with open(filepath) as fp:
 #     print(key)
 #     print(grids.get(key))
 
+
+dict1 = grids.get("2473").items()
+dict2 = grids.get("1171").items()
+
+match = set(dict1) & set(dict2)
+
+
 #Find edge matches for the first grid
 key = grids.keys()[0]
 grid = grids.get(key)
