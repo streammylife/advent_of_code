@@ -26,7 +26,25 @@ def flipTileX(tmpTileId, tmpTiles):
     for i in range(len(tmpEdges)):
         tmpEdges[i] = tmpEdges[i][::-1]
 
+def rotateGrid(g1):
 
+    gridSize = (sorted(g1.keys(),reverse=True)[0][0]) + 1
+
+    newTileGrid = {}
+    for key in g1.keys():
+        newKey = (gridSize - 1 - key[1], key[0])
+        newTileGrid[newKey] = copy.deepcopy(g1[key])
+    return newTileGrid
+
+def flipGrid(g1):
+
+    gridSize = (sorted(g1.keys(),reverse=True)[0][0]) + 1
+
+    newTileGrid = {}
+    for key in g1.keys():
+        newKey = (gridSize - 1 - key[0], key[1])
+        newTileGrid[newKey] = copy.deepcopy(g1[key])
+    return newTileGrid
 
 def reorientGrid(tmpTileId, tmpTiles, searchRnd):
     """
@@ -38,20 +56,21 @@ def reorientGrid(tmpTileId, tmpTiles, searchRnd):
 
     if searchRnd > 2:
         #gotta flip it
-        for key in tmpTileGrid.keys():
-            newKey = ((key[0] - 7) % 8,key[1])
-            newTileGrid[newKey] = copy.deepcopy(tmpTileGrid[key])
+        newTileGrid = flipGrid(newTileGrid)
         rotations = searchRnd - 3
     else:
         rotations = searchRnd
 
     for i in range(rotations):
-        for key in tmpTileGrid.keys():
-            newKey = ((key[1] - 7) % 8,key[0])
-            newTileGrid[newKey] = copy.deepcopy(tmpTileGrid[key])
+        newTileGrid = rotateGrid(newTileGrid)
 
     tmpTiles.get(tmpTileId)["grid"] = copy.deepcopy(newTileGrid)
 
+
+
+
+
+filepath = 'test'
 with open(filepath) as fp:
     line = fp.readline()
     tile = {}
@@ -127,6 +146,22 @@ with open(filepath) as fp:
 
                 tileLine = tileLine + 1
 
+        line = fp.readline()
+
+filepath = 'monster'
+monster = {}
+with open(filepath) as fp:
+    line = fp.readline()
+    lineNum = 0
+    while line:
+        line = line.split('\n')[0]
+        for i in range(len(line)):
+            if line[i] == '.':
+                c = " "
+            else:
+                c = line[i]
+            monster[(i,lineNum)] = c
+        lineNum = lineNum + 1
         line = fp.readline()
 
 #pick an arbitrary tile to start with
@@ -212,7 +247,7 @@ for corner in corners:
 
 #build the big grid
 bigGrid = {}
-startTileId = corner
+startTileId = topLeft
 nextTileId = startTileId
 tileRow = 0
 tileCol = 0
@@ -224,14 +259,54 @@ while nextTileId != "":
         for key in nextTileGrid.keys():
             bigGrid[key[0] + tileCol, key[1] + tileRow] = copy.deepcopy(nextTileGrid.get(key))
         nextTileId = foundPieces.get(nextTileId).get("right")[2]
-        tileCol = tileCol + 1
+        tileCol = tileCol + 8
 
     tileCol = 0
-    tileRow = tileRow + 1
+    tileRow = tileRow + 8
     startTileId = foundPieces.get(startTileId).get("bottom")[2]
     nextTileId = startTileId
 
 
+
+monsterFound = False
+# while monsterFound == False:
+for a in range(4):
+    for i in range(24):
+        for ii in range(24):
+            monsterFound = True
+            for key in monster.keys():
+                c1 = monster.get(key)
+                if c1 == '#':
+                    c2Key = (key[0] + i, key[1] + ii)
+                    c2 = bigGrid.get(c2Key)
+                    if c1 != c2:
+                        monsterFound = False
+                        break
+    if monsterFound == True:
+            print("Monster Found")
+    else:
+        bigGrid = copy.deepcopy(rotateGrid(bigGrid))
+
+if not monsterFound:
+    bigGrid = copy.deepcopy(flipGrid(bigGrid))
+    for a in range(4):
+        for i in range(24):
+            for ii in range(24):
+                monsterFound = True
+                for key in monster.keys():
+                    c1 = monster.get(key)
+                    if c1 == '#':
+                        c2Key = (key[0] + i, key[1] + ii)
+                        c2 = bigGrid.get(c2Key)
+                        if c1 != c2:
+                            monsterFound = False
+                            break
+        if monsterFound == True:
+            print("Monster Found")
+        else:
+            bigGrid = copy.deepcopy(rotateGrid(bigGrid))
+
+#bigGrid = copy.deepcopy(flipGrid(bigGrid))
 
 
 
