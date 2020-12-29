@@ -28,9 +28,34 @@ def flipTileX(tmpTileId, tmpTiles):
 
 
 
+def reorientGrid(tmpTileId, tmpTiles, searchRnd):
+    """
+
+    :type tmpTiles: object
+    """
+    tmpTileGrid = tmpTiles.get(tmpTileId).get("grid")
+    newTileGrid = copy.deepcopy(tmpTileGrid)
+
+    if searchRnd > 2:
+        #gotta flip it
+        for key in tmpTileGrid.keys():
+            newKey = ((key[0] - 7) % 8,key[1])
+            newTileGrid[newKey] = copy.deepcopy(tmpTileGrid[key])
+        rotations = searchRnd - 3
+    else:
+        rotations = searchRnd
+
+    for i in range(rotations):
+        for key in tmpTileGrid.keys():
+            newKey = ((key[1] - 7) % 8,key[0])
+            newTileGrid[newKey] = copy.deepcopy(tmpTileGrid[key])
+
+    tmpTiles.get(tmpTileId)["grid"] = copy.deepcopy(newTileGrid)
+
 with open(filepath) as fp:
     line = fp.readline()
     tile = {}
+    grid = {}
     tileIdFound = False
     tileLine = 0
     tileId = ""
@@ -38,6 +63,7 @@ with open(filepath) as fp:
     right = ""
     bottom = ""
     left = ""
+
     while line:
 
         if line.isspace():
@@ -54,6 +80,8 @@ with open(filepath) as fp:
             tile["bottom"] = [2, False, ""]
             tile["left"] = [3, False, ""]
 
+            tile["grid"] = copy.deepcopy(grid)
+
             tiles[tileId] = tile.copy()
             tile = {}
             tileId = ""
@@ -62,6 +90,8 @@ with open(filepath) as fp:
             bottom = ""
             left = ""
             tileLine = 0
+
+            grid ={}
 
         else:
             if not tileIdFound:
@@ -74,6 +104,11 @@ with open(filepath) as fp:
                 # store all the vals in clockwise order
                 for i in range(tileLen):
                     lineEntry = line[i]
+
+                    if i > 0 and i < (tileLen - 1):
+                        if tileLine > 0 and tileLine <(tileLen - 1):
+                            grid[(i-1,tileLine-1)] = lineEntry
+
                     # add top line
                     if tileLine == 0:
                         top = top + lineEntry
@@ -144,6 +179,8 @@ while not complete:
                 if searchRound == 3 or searchRound == 7:
                     flipTileX(key1,tiles)
                 searchRound = searchRound + 1
+            else:
+                reorientGrid(key1, tiles, searchRound)
 
         if len(newFoundPieces) > 0:
             complete = False
@@ -165,12 +202,46 @@ for key in foundPieces.keys():
         corners.append(key)
 
 prod = 1
+topLeft = ""
 for corner in corners:
     prod = prod * int(corner)
+    if foundPieces.get(corner).get("top")[1] == False:
+        if foundPieces.get(corner).get("left")[1] == False:
+            topLeft = corner
+
+
+#build the big grid
+bigGrid = {}
+startTileId = corner
+nextTileId = startTileId
+tileRow = 0
+tileCol = 0
+while nextTileId != "":
+    print(nextTileId)
+
+    nextTileGrid = foundPieces.get(nextTileId).get("grid")
+    while nextTileId != "":
+        for key in nextTileGrid.keys():
+            bigGrid[key[0] + tileCol, key[1] + tileRow] = copy.deepcopy(nextTileGrid.get(key))
+        nextTileId = foundPieces.get(nextTileId).get("right")[2]
+        tileCol = tileCol + 1
+
+    tileCol = 0
+    tileRow = tileRow + 1
+    startTileId = foundPieces.get(startTileId).get("bottom")[2]
+    nextTileId = startTileId
+
+
+
 
 
 print(corners)
 print("Ans: {}".format(prod))
+
+
+
+
+
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
