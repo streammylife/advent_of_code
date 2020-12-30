@@ -54,10 +54,10 @@ def reorientGrid(tmpTileId, tmpTiles, searchRnd):
     tmpTileGrid = tmpTiles.get(tmpTileId).get("grid")
     newTileGrid = copy.deepcopy(tmpTileGrid)
 
-    if searchRnd > 2:
+    if searchRnd > 3:
         #gotta flip it
         newTileGrid = flipGrid(newTileGrid)
-        rotations = searchRnd - 3
+        rotations = searchRnd - 4
     else:
         rotations = searchRnd
 
@@ -210,12 +210,15 @@ while not complete:
                                 matchFound = True
 
             if not matchFound:
+                grid = tiles.get(key1).get("grid")
                 rotateTile(key1, tiles)
+                tiles.get(key1)["grid"] = rotateGrid(grid)
                 if searchRound == 3 or searchRound == 7:
                     flipTileX(key1,tiles)
+                    tiles.get(key1)["grid"] = flipGrid(grid)
                 searchRound = searchRound + 1
-            else:
-                reorientGrid(key1, tiles, searchRound)
+            # else:
+            #     reorientGrid(key1, tiles, searchRound)
 
         if len(newFoundPieces) > 0:
             complete = False
@@ -236,6 +239,8 @@ for key in foundPieces.keys():
     if edgeMatchCount == 2:
         corners.append(key)
 
+
+
 prod = 1
 topLeft = ""
 for corner in corners:
@@ -252,12 +257,20 @@ nextTileId = startTileId
 tileRow = 0
 tileCol = 0
 while nextTileId != "":
-    print(nextTileId)
 
-    nextTileGrid = foundPieces.get(nextTileId).get("grid")
     while nextTileId != "":
+        nextTileGrid = foundPieces.get(nextTileId).get("grid")
+        print("  ")
+        print("--------------------")
+        print(nextTileId)
+        for i in range(8):
+            line = ""
+            for ii in range(8):
+                line = line + foundPieces.get(nextTileId).get("grid").get((ii, i))
+            print(line)
         for key in nextTileGrid.keys():
-            bigGrid[key[0] + tileCol, key[1] + tileRow] = copy.deepcopy(nextTileGrid.get(key))
+            bigGridKey = (key[0] + tileCol, key[1] + tileRow)
+            bigGrid[bigGridKey] = copy.deepcopy(nextTileGrid.get(key))
         nextTileId = foundPieces.get(nextTileId).get("right")[2]
         tileCol = tileCol + 8
 
@@ -266,11 +279,31 @@ while nextTileId != "":
     startTileId = foundPieces.get(startTileId).get("bottom")[2]
     nextTileId = startTileId
 
+# print("1951")
+# for i in range(8):
+#     line = ""
+#     for ii in range(8):
+#         line = line + foundPieces.get("1951").get("grid").get((ii,i))
+#     print(line)
 
+
+def printGrid():
+    global bigGrid
+    print("  ")
+    print("  ")
+    print("biggrid")
+    for i in range(24):
+        line = ""
+        for ii in range(24):
+            line = line + bigGrid.get((ii,i))
+        print(line)
+# for key in sorted(foundPieces.get("1951").get("grid").keys()):
+#     print("KEY: {} VAL: {}".format(key,foundPieces.get("1951").get("grid").get(key)))
 
 monsterFound = False
 # while monsterFound == False:
 for a in range(4):
+    printGrid()
     for i in range(24):
         for ii in range(24):
             monsterFound = True
@@ -290,6 +323,7 @@ for a in range(4):
 if not monsterFound:
     bigGrid = copy.deepcopy(flipGrid(bigGrid))
     for a in range(4):
+        printGrid()
         for i in range(24):
             for ii in range(24):
                 monsterFound = True
