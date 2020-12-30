@@ -2,7 +2,6 @@ import time
 import copy
 
 start_time = time.time()
-filepath = 'test'
 
 tiles = {}
 
@@ -70,7 +69,8 @@ def reorientGrid(tmpTileId, tmpTiles, searchRnd):
 
 
 
-filepath = 'test'
+filepath = 'input'
+initialCount = 0
 with open(filepath) as fp:
     line = fp.readline()
     tile = {}
@@ -123,6 +123,9 @@ with open(filepath) as fp:
                 # store all the vals in clockwise order
                 for i in range(tileLen):
                     lineEntry = line[i]
+
+                    if lineEntry == '#':
+                        initialCount = initialCount + 1
 
                     if i > 0 and i < (tileLen - 1):
                         if tileLine > 0 and tileLine <(tileLen - 1):
@@ -210,15 +213,41 @@ while not complete:
                                 matchFound = True
 
             if not matchFound:
-                grid = tiles.get(key1).get("grid")
+                if key1 == "3079":
+                    print("shit before anything")
+                    for i in range(8):
+                        line = ""
+                        for ii in range(8):
+                            line = line + tiles.get("3079").get("grid").get((ii,i))
+                        print(line)
+                # grid = tiles.get(key1).get("grid")
                 rotateTile(key1, tiles)
-                tiles.get(key1)["grid"] = rotateGrid(grid)
-                if searchRound == 3 or searchRound == 7:
+                tiles[key1]["grid"] = rotateGrid(tiles[key1]["grid"]).copy()
+                if searchRound == 3:
                     flipTileX(key1,tiles)
-                    tiles.get(key1)["grid"] = flipGrid(grid)
+                    # grid = tiles.get(key1).get("grid")
+                    tiles[key1]["grid"] = flipGrid(tiles[key1]["grid"]).copy()
+                    if key1 == "3079":
+                        tiles[key1]["grid"] = rotateGrid(tiles[key1]["grid"]).copy()
+                        tiles[key1]["grid"] = rotateGrid(tiles[key1]["grid"]).copy()
+                        # tiles.get(key1)["grid"] = rotateGrid(grid)
+                        # tiles.get(key1)["grid"] = rotateGrid(grid)
+                        # tiles.get(key1)["grid"] = rotateGrid(grid)
+                        print("shit after flip and weird shit")
+                        for i in range(8):
+                            line = ""
+                            for ii in range(8):
+                                line = line + tiles.get("3079").get("grid").get((ii, i))
+                            print(line)
                 searchRound = searchRound + 1
-            # else:
-            #     reorientGrid(key1, tiles, searchRound)
+            else:
+                if key1 == "3079":
+                    print("shit")
+                    for i in range(8):
+                        line = ""
+                        for ii in range(8):
+                            line = line + tiles.get("3079").get("grid").get((ii,i))
+                        print(line)
 
         if len(newFoundPieces) > 0:
             complete = False
@@ -256,9 +285,12 @@ startTileId = topLeft
 nextTileId = startTileId
 tileRow = 0
 tileCol = 0
+
+usedTileIds = []
 while nextTileId != "":
 
     while nextTileId != "":
+        usedTileIds.append(nextTileId)
         nextTileGrid = foundPieces.get(nextTileId).get("grid")
         print("  ")
         print("--------------------")
@@ -271,13 +303,32 @@ while nextTileId != "":
         for key in nextTileGrid.keys():
             bigGridKey = (key[0] + tileCol, key[1] + tileRow)
             bigGrid[bigGridKey] = copy.deepcopy(nextTileGrid.get(key))
+
+        lastTileId = nextTileId
         nextTileId = foundPieces.get(nextTileId).get("right")[2]
         tileCol = tileCol + 8
+
+        if nextTileId == "" and tileCol < 96:
+            print("Shit... again")
+            bottom = foundPieces.get(lastTileId).get("bottom")[2]
+            right = foundPieces.get(bottom).get("right")[2]
+            top = foundPieces.get(right).get("top")[2]
+            nextTileId = bottom
+
+
+
 
     tileCol = 0
     tileRow = tileRow + 8
     startTileId = foundPieces.get(startTileId).get("bottom")[2]
+    if startTileId == "2557":
+        print("shit")
     nextTileId = startTileId
+
+initialCount = 0
+for key in bigGrid.keys():
+    if bigGrid.get(key) == '#':
+        initialCount = initialCount + 1
 
 # print("1951")
 # for i in range(8):
@@ -300,57 +351,102 @@ def printGrid():
 # for key in sorted(foundPieces.get("1951").get("grid").keys()):
 #     print("KEY: {} VAL: {}".format(key,foundPieces.get("1951").get("grid").get(key)))
 
+bigGridSize = sorted(bigGrid.keys(),reverse=True)[0][0] + 1
+# bigGridSize = 24
+
 monsterFound = False
 # while monsterFound == False:
+monstersFound = 0
 for a in range(4):
-    printGrid()
-    for i in range(24):
-        for ii in range(24):
+    # printGrid()
+    # if a == 2:
+    #     printGrid()
+    for i in range(bigGridSize):
+        for ii in range(bigGridSize):
             monsterFound = True
+            foundKeys = []
             for key in monster.keys():
                 c1 = monster.get(key)
                 if c1 == '#':
-                    c2Key = (key[0] + i, key[1] + ii)
+                    c2Key = (key[0] + ii, key[1] + i)
                     c2 = bigGrid.get(c2Key)
                     if c1 != c2:
                         monsterFound = False
+                        # print("try next window")
                         break
-    if monsterFound == True:
-            print("Monster Found")
+                    else:
+                        foundKeys.append(c2Key)
+            if monsterFound == True:
+                print("Monster Found")
+                monstersFound = monsterFound + 1
+                print("Starting Coord {}".format(foundKeys[0]))
+                for key in foundKeys:
+                    bigGrid[key] = 'O'
+    if monsterFound:
+        break
     else:
         bigGrid = copy.deepcopy(rotateGrid(bigGrid))
 
-if not monsterFound:
+if monstersFound == 0:
     bigGrid = copy.deepcopy(flipGrid(bigGrid))
+
     for a in range(4):
-        printGrid()
-        for i in range(24):
-            for ii in range(24):
+        # printGrid()
+        # if a == 2:
+        #     printGrid()
+        for i in range(bigGridSize):
+            for ii in range(bigGridSize):
                 monsterFound = True
+                foundKeys = []
                 for key in monster.keys():
                     c1 = monster.get(key)
                     if c1 == '#':
-                        c2Key = (key[0] + i, key[1] + ii)
+                        c2Key = (key[0] + ii, key[1] + i)
                         c2 = bigGrid.get(c2Key)
                         if c1 != c2:
                             monsterFound = False
+                            # print("try next window")
                             break
-        if monsterFound == True:
-            print("Monster Found")
+                        else:
+                            foundKeys.append(c2Key)
+                if monsterFound == True:
+                    print("Monster Found")
+                    for key in foundKeys:
+                        bigGrid[key] = 'O'
+        if monsterFound:
+            break
         else:
             bigGrid = copy.deepcopy(rotateGrid(bigGrid))
 
-#bigGrid = copy.deepcopy(flipGrid(bigGrid))
+waterCnt = 0
 
+for key in bigGrid.keys():
+    if bigGrid.get(key) == '#':
+        waterCnt = waterCnt + 1
 
 
 print(corners)
 print("Ans: {}".format(prod))
+print("Water CNT: {}".format(waterCnt))
+print("Initial Cnt: {}".format(initialCount))
 
 
 
+# for i in range(bigGridSize):
+#     for ii in range(bigGridSize):
+#         testKey = (ii, i)
+#         if testKey not in bigGrid.keys():
+#             print(testKey)
 
 
+missingKeys = set(foundPieces.keys()) - set(usedTileIds)
 
+missingPieces = 0
+for mkey in missingKeys:
+    for gkey in foundPieces.get(mkey).get("grid"):
+        if foundPieces.get(mkey).get("grid").get(gkey) == '#':
+            missingPieces = missingPieces + 1
+
+print("New Water CNT: {}".format(waterCnt + missingPieces))
 
 print("--- %s seconds ---" % (time.time() - start_time))
